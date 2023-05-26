@@ -26,6 +26,8 @@ public class FullClients {
     private Client myClient;
     private Socket readingSocket;
     public int myIndex;
+    private Vector3f playerLoc;
+    private double playerDir;
 
     public FullServers getMyServer() {
         return myServer;
@@ -67,14 +69,6 @@ public class FullClients {
         this.readingSocket = readingSocket;
     }
 
-    public int getMyIndex() {
-        return myIndex;
-    }
-
-    public void setMyIndex(int myIndex) {
-        this.myIndex = myIndex;
-    }
-
     public FullClients() {
 
         myServer = null;
@@ -83,6 +77,7 @@ public class FullClients {
         myClient = null;
         readingSocket = null;
         myIndex = -1;
+
     }
 
     public FullClients(FullServers mine, Player mPlayer) {
@@ -92,6 +87,8 @@ public class FullClients {
         myClient = new Client(myServer.getIP(), FullServers.PORT_NUMBER);
         readingSocket = myClient.createSocket();
         myIndex = -1;
+        playerLoc = myPlayer.getLocation();
+        playerDir = myPlayer.getDirection();
 
     }
 
@@ -119,6 +116,68 @@ public class FullClients {
 
     public void postPlayer() {
         postPlayer(myPlayer, false);
+    }
+
+    public int getMyIndex() {
+        return myIndex = myServer.findPlayerIndex(getMyPlayer().getName());
+    }
+    // Now, here's the part we need to figure out, Anwar. We need to take
+    // differences in the player's location as found in myPlayer.getLocation() and
+    // call act player on the server. Then, we need to make a main method the game
+    // engine can run every tick, for both FullServers and FullClients.
+
+    public void doTick() {
+
+        readServer();
+        Vector3f origin = new Vector3f(0, 0, 0);
+        Vector3f loc = myPlayer.getLocation();
+        float myX = playerLoc.x;
+        float x = loc.x;
+        float myY = playerLoc.y;
+        float y = loc.y;
+        float myZ = playerLoc.z;
+        float z = loc.z;
+
+        float changeInY = y - myY;
+
+        String lastMovement = myPlayer.getHasBeenDone();
+        boolean forward = lastMovement.toLowerCase().equals("w");
+
+        boolean right = lastMovement.toLowerCase().equals("d");
+        boolean horizontal = lastMovement.toLowerCase().equals("a") || lastMovement.toLowerCase().equals("D");
+
+        myServer.makePlayerAct(forward, right, horizontal, myIndex);
+        /*
+         * 
+         * double myDirection = playerDir;
+         * double direction = myPlayer.getDirection();
+         * double changeInDirection = direction - myDirection;
+         * double coTangentOfForward = (double) 1 / Math.tan((direction) * (Math.PI /
+         * 180));
+         * double slope = x/z;
+         * 
+         * 
+         * /*double coTangentOfForwardChange = (double) 1 / Math.tan((changeInDirection)
+         * * (Math.PI / 180));
+         * double coTangentOfRight = (double) 1 / Math.tan((direction + 90) * (Math.PI /
+         * 180));
+         * /*double coTangentOfRightChange = (double) 1 / Math.tan((changeInDirection +
+         * 90) * (Math.PI / 180));
+         * double coTangentOfBackward = (double) 1 / Math.tan((direction + 180) *
+         * (Math.PI / 180));
+         * double coTangentOfBackwardChange = (double) 1 / Math.tan((changeInDirection +
+         * 180) * (Math.PI / 180));
+         * double coTangentOfLeft = (double) 1 / Math.tan((direction - 90) * (Math.PI /
+         * 180));
+         * double coTangentOfLeftChange = (double) 1 / Math.tan((changeInDirection - 90)
+         * * (Math.PI / 180));
+         * 
+         * boolean isForward = coTangentOfForward == slope;
+         * boolean isBackward = coTangentOfBackward == slope;
+         */
+
+        myServer.makePlayerJump(myIndex, changeInY);
+
     }
 
     public CurrentPositions readServer() {

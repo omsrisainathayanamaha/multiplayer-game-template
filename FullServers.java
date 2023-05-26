@@ -188,7 +188,15 @@ class FullServers /* For Servers. */ {
         } else if (!right && horizontal) {
             placeholder.moveLeft(Player.PLAYER_WALK_SPEED);
         }
+        players.remove(playerIndex);
+        players.add(playerIndex, placeholder);
 
+    }
+
+    public void makePlayerJump(int playerIndex, float amount) {
+        Player placeholder = players.remove(playerIndex);
+        Vector3f playerLoc = placeholder.getLocation();
+        placeholder.setLocation(new Vector3f(playerLoc.x, playerLoc.y + amount, playerLoc.z));
     }
 
     public int findPlayerIndex(String name) {
@@ -201,7 +209,7 @@ class FullServers /* For Servers. */ {
         return -1;
     }
 
-    public void runTick() {
+    public void doTick() {
         if (lastTick % (500 / wave) < 1) {
             if (lastTick % (1000 / wave) < 1) {
                 entities.add(spawner1.SpawnEntity());
