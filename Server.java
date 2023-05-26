@@ -8,6 +8,30 @@ public class Server {
     Socket client;
     ObjectOutputStream out;
 
+    public ServerSocket getSs() {
+        return ss;
+    }
+
+    public void setSs(ServerSocket ss) {
+        this.ss = ss;
+    }
+
+    public Socket getClient() {
+        return client;
+    }
+
+    public void setClient(Socket client) {
+        this.client = client;
+    }
+
+    public ObjectOutputStream getOut() {
+        return out;
+    }
+
+    public void setOut(ObjectOutputStream out) {
+        this.out = out;
+    }
+
     public Server(int portNum) {
         try {
             ss = new ServerSocket(portNum);
